@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - SimpleBBS</title>
+</head>
+<body>
+
+<h1>REGISTER NEW ACCOUNT</h1>
+
+<form th:action="@{/account/register}" method="post" th:object="${command}">
+    <table>
+        <tr>
+            <td><label for="id-form">ID</label></td>
+            <td><input id="id-form" name="userId" type="text" th:value="*{userId}" required></td>
+            <td><span th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}">UserId Error Message</span></td>
+            <!-- *{} for accessing fields of th:object's object. -->
+        </tr>
+        <tr>
+            <td><label for="name-form">NAME</label></td>
+            <td><input id="name-form" name="username" type="text" th:value="*{username}" required></td>
+            <td><span th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error Message</span></td>
+        </tr>
+        <tr>
+            <td><label for="password-form">PASSWORD</label></td>
+            <td><input id="password-form" name="password" type="password" th:value="*{password}" required></td>
+            <td><span th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error Message</span></td>
+        </tr>
+        <tr>
+            <td><label for="email-form">EMAIL</label></td>
+            <td><input id="email-form" name="email" type="email" th:value="*{email}" required></td>
+            <td><span th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error Message</span></td>
+        </tr>
+        <tr>
+            <td><label for="question-form">RECOVERY QUESTION</label></td>
+            <td><input id="question-form" name="recoveryQuestion" type="text" th:value="*{recoveryQuestion}" required></td>
+            <td><span th:if="${#fields.hasErrors('recoveryQuestion')}" th:errors="*{recoveryQuestion}">Question Error Message</span></td>
+        </tr>
+        <tr>
+            <td><label for="answer-form">RECOVERY ANSWER</label></td>
+            <td><input id="answer-form" name="recoveryAnswer" type="text" th:value="*{recoveryAnswer}" required></td>
+            <td><span th:if="${#fields.hasErrors('recoveryAnswer')}" th:errors="*{recoveryAnswer}">Answer Error Message</span></td>
+        </tr>
+        <tr>
+            <td><input type="submit" value="Register"></td>
+        </tr>
+    </table>
+</form>
+
+</body>
+</html>

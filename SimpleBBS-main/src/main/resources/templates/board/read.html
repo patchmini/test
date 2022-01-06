@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${article.getTitle() + ' - SimpleBBS'}">Title - SimpleBBS</title>
+</head>
+<body>
+
+<div th:object="${article}">
+    <div>
+        <h1 th:text="*{title}">Title</h1>
+    </div>
+    <div>
+        <h3 th:text="*{writer}">Writer</h3>
+        <h3 th:unless="*{userId.isBlank()}" th:text="|(*{userId})|">Writer</h3>
+    </div>
+    <div>
+        <h4 th:text="|Written: *{createdDate} / Modified: *{modifiedDate}|">CREATED/MODIFIED DATE</h4>
+        <h4 th:text="|Hit: *{hit}|">HIT VALUE</h4>
+    </div>
+
+    <hr>
+
+    <div>
+        <p th:text="*{content}">Content</p>
+    </div>
+
+    <div th:unless="${resources.isEmpty()}">
+        <table>
+            <tr><th>FILES</th></tr>
+            <tr th:each="resource : ${resources}" th:object="${resource}">
+                <td>
+                    <a th:if="*{remoteUrl == null}"
+                       th:href="@{/resource/load(hash=${resource.hashedFilename})}"
+                       th:text="*{filename}" target="_blank"></a>
+                    <a th:unless="*{remoteUrl == null}"
+                       th:href="*{remoteUrl}"
+                       th:text="*{filename}" target="_blank"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<br>
+
+<div>
+    <div>
+        <a th:href="@{/board/list}">List</a>
+        <a th:if="${authorized}" th:href="@{/board/edit(id=${article.getId()})}">Edit</a>
+        <a th:if="${authorized}" th:href="@{/board/remove(id=${article.getId()})}">Delete</a>
+    </div>
+
+    <div>
+        <form th:action="@{/comment/create}" method="post">
+            <input type="hidden" th:value="${article.id}" name="articleId">
+            <table>
+                <caption>WRITE YOUR COMMENT</caption>
+                <tr>
+                    <th>
+                        <label for="form-writer">WRITER</label>
+                    </th>
+                    <th th:if="${loginUsername.isBlank()}">
+                        <label for="form-password">PASSWORD</label>
+                    </th>
+                    <th>
+                        <label for="form-content">CONTENT</label>
+                    </th>
+                </tr>
+
+                <tr>
+                    <td>
+                        <input id="form-writer" th:if="${loginUsername.isBlank()}" type="text" name="writer" maxlength="64" required>
+
+                        <span th:unless="${loginUsername.isBlank()}" th:text="${loginUsername}"></span>
+                        <input th:unless="${loginUsername.isBlank()}" type="hidden" name="writer" th:value="${loginUsername}">
+                    </td>
+                    <td>
+                        <input id="form-password" th:if="${loginUsername.isBlank()}" type="password" name="password" minlength="4" required>
+                        <input th:unless="${loginUsername.isBlank()}" type="hidden" name="password" value="THIS_IS_DUMMY_PASSWORD">
+                    </td>
+                    <td>
+                        <input id="form-content" type="text" name="content" maxlength="255" required>
+                    </td>
+                    <td>
+                        <input type="submit" value="Submit">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+<br>
+
+    <table>
+        <caption>COMMENTS</caption>
+        <tr><th>NO</th><th>WRITER</th><th>COMMENT</th><th>DATE</th></tr>
+        <tr th:each="comment: ${comments}">
+            <td th:text="${comment.getId()}">-</td>
+            <td th:text="${comment.getWriter()}">WRITER HERE</td>
+            <td th:text="${comment.getContent()}">COMMENT HERE</td>
+            <td th:text="${comment.getCreatedDate()}"></td>
+            <td>
+                <form th:action="@{/comment/remove}" method="get">
+                    <input type="hidden" name="id" th:value="${comment.getId()}">
+                    <input type="submit" value="DELETE">
+                </form>
+            </td>
+        </tr>
+    </table>
+    <div th:if="${totalCommentPages > 0}">
+        <span th:each="i: ${#numbers.sequence(1, totalCommentPages)}" th:classappend="${i == currentCommentPage} == true ? 'current' : ''">
+            <a th:href="@{/board/read(id=${article.getId()}, commentPage=${i - 1})}" th:text="${i}">-</a>
+        </span>
+    </div>
+
+</div>
+
+</body>
+</html>
